@@ -12,6 +12,12 @@ export default defineConfig(() => ({
   //
   // 1. prevent Vite from obscuring rust errors
   clearScreen: false,
+  // Two pages: the dashboard, and the History window (graph.html, opened per repo).
+  build: {
+    rollupOptions: {
+      input: { main: "index.html", graph: "graph.html" },
+    },
+  },
   // 2. tauri expects a fixed port, fail if that port is not available
   server: {
     port: 1420,

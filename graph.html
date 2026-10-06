@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>History</title>
+<link rel="stylesheet" href="/src/graph/app.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1fb6e0" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="5" r="2.5"/><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="9" r="2.5"/><path d="M6 7.5v9M18 11.5c0 4-12 2-12 5"/></svg>
+      History
+    </div>
+    <div class="hsep"></div>
+    <select class="repo" id="repoSel" title="Switch repository"></select>
+    <span class="branch-pill" id="branchPill"></span>
+    <div class="spacer"></div>
+    <label class="search"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg>
+      <input id="q" placeholder="Search commits, authors, SHA…" autocomplete="off"><span class="count" id="qc"></span></label>
+    <button class="btn" id="refresh" title="Reload (R)">Refresh</button>
+    <span class="live" title="Auto-refreshes when the repo changes"><i></i>Live</span>
+  </header>
+  <main>
+    <aside id="side"></aside>
+    <section id="center">
+      <div class="fbar">
+        <label>Author <select id="fAuthor"></select></label>
+        <label>Branch <select id="fBranch"></select></label>
+        <label>Date <select id="fDays">
+          <option value="0">Any time</option><option value="1">Last 24 hours</option><option value="7">Last 7 days</option>
+          <option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last year</option>
+        </select></label>
+        <div class="seg" title="Fade non-matching commits, or remove them from the graph">
+          <button class="btn" data-fmode="dim">Dim</button><button class="btn" data-fmode="hide">Hide</button>
+        </div>
+        <button class="btn" id="fClear" hidden>Clear</button>
+        <span class="fcount" id="fCount"></span>
+      </div>
+      <div class="cols"><div style="text-align:right">Branch / Tag</div><div>Graph</div><div>Commit message</div><div>Author</div><div>Date</div></div>
+      <div id="scroll"><div id="inner"><svg id="svg"></svg><div id="rows"></div></div></div>
+      <div id="diff">
+        <div class="dh">
+          <button class="btn" id="dBack" title="Back to graph (Esc)">← Graph</button>
+          <span class="st" id="dSt"></span>
+          <span class="path" id="dPath"></span>
+          <span class="ad" id="dAd"></span>
+          <div class="spacer"></div>
+          <span class="hint">[ ] prev/next file · Esc close</span>
+          <button class="btn" id="dPrev" title="Previous file ([)">↑</button>
+          <button class="btn" id="dNext" title="Next file (])">↓</button>
+          <div class="seg"><button class="btn" data-mode="hunk">Hunk</button><button class="btn" data-mode="split">Split</button></div>
+        </div>
+        <div id="dbody"></div>
+      </div>
+    </section>
+    <section id="details"></section>
+  </main>
+</div>
+<div id="toast"></div>
+<script type="module" src="/src/graph/app.js"></script>
+</body>
+</html>

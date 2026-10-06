@@ -112,9 +112,27 @@ pub fn is_safe_segment(s: &str) -> bool {
 /// `Result<T, E>` is Rust's error handling: callers must deal with the `Err`
 /// case explicitly; there are no exceptions.
 pub fn run(repo: &Path, args: &[&str]) -> Result<String, String> {
-    let out = Command::new("git")
+    let out = output(repo, args)?;
+    if out.status.success() {
+        Ok(String::from_utf8_lossy(&out.stdout).into_owned())
+    } else {
+        Err(String::from_utf8_lossy(&out.stderr).trim().to_string())
+    }
+}
+
+/// Like `run`, but returns stdout even when git exits non-zero, for commands
+/// where that's normal: `diff --no-index` exits 1 when the files differ, and
+/// `log` or `rev-parse HEAD` fail in a repo with no commits yet.
+pub fn run_lenient(repo: &Path, args: &[&str]) -> Result<String, String> {
+    output(repo, args).map(|out| String::from_utf8_lossy(&out.stdout).into_owned())
+}
+
+fn output(repo: &Path, args: &[&str]) -> Result<std::process::Output, String> {
+    Command::new("git")
         .arg("-C")
         .arg(repo)
+        // Print paths as-is instead of octal-escaping non-ASCII names.
+        .args(["-c", "core.quotepath=off"])
         .args(args)
         // Never take .git/index.lock: we're scanning repos you may be
         // committing in at the same moment.
@@ -122,13 +140,7 @@ pub fn run(repo: &Path, args: &[&str]) -> Result<String, String> {
         // Never block waiting for a password prompt nobody can see.
         .env("GIT_TERMINAL_PROMPT", "0")
         .output()
-        .map_err(|e| format!("couldn't run git: {e}"))?;
-
-    if out.status.success() {
-        Ok(String::from_utf8_lossy(&out.stdout).into_owned())
-    } else {
-        Err(String::from_utf8_lossy(&out.stderr).trim().to_string())
-    }
+        .map_err(|e| format!("couldn't run git: {e}"))
 }
 
 // `#[cfg(test)]` compiles this module only for `cargo test`.

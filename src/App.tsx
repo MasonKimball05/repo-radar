@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
-import { ciStatus, defaultRoot, inTauri, scanRepos } from "./api";
+import { ciStatus, defaultRoot, inTauri, openHistory, scanRepos } from "./api";
 import { compareLevel, flagsFor, timeAgo, worstLevel, type Flag, type FlagId, type Level } from "./flags";
 import type { CiState, Repo, ScanResult } from "./types";
 import "./App.css";
@@ -212,7 +212,12 @@ export default function App() {
           </thead>
           <tbody>
             {visible.map((r) => (
-              <RepoRow key={r.repo.path} row={r} ci={r.repo.github ? ci[r.repo.github] : undefined} />
+              <RepoRow
+                key={r.repo.path}
+                row={r}
+                ci={r.repo.github ? ci[r.repo.github] : undefined}
+                onHistory={() => openHistory(scan!.root, r.repo.name)}
+              />
             ))}
           </tbody>
         </table>
@@ -227,7 +232,7 @@ export default function App() {
   );
 }
 
-function RepoRow({ row, ci }: { row: Row; ci?: CiState }) {
+function RepoRow({ row, ci, onHistory }: { row: Row; ci?: CiState; onHistory: () => void }) {
   const { repo, flags, level } = row;
   const s = repo.status;
 
@@ -237,7 +242,9 @@ function RepoRow({ row, ci }: { row: Row; ci?: CiState }) {
         <span className={`dot ${level}`} title={flags.map((f) => f.label).join(", ") || "clean"} />
       </td>
       <td>
-        <div className="name">{repo.name}</div>
+        <button className="name link" title="Open history" disabled={!inTauri} onClick={onHistory}>
+          {repo.name}
+        </button>
         <div className="muted small">{repo.github ?? repo.remote ?? "no remote"}</div>
       </td>
       <td>
@@ -269,6 +276,9 @@ function RepoRow({ row, ci }: { row: Row; ci?: CiState }) {
         <CiBadge state={ci} hasGithub={!!repo.github} />
       </td>
       <td className="actions">
+        <button className="icon" title="History: commit graph and diffs" disabled={!inTauri} onClick={onHistory}>
+          ⎇
+        </button>
         <button className="icon" title="Show in Finder" disabled={!inTauri} onClick={() => revealItemInDir(repo.path)}>
           ⌕
         </button>

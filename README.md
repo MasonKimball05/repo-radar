@@ -18,6 +18,13 @@ Filters: needs attention, uncommitted, unpushed, behind, no remote, **duplicates
 (folders cloned from the same origin, e.g. `Parliament` / `Parliament-clean`).
 It rescans automatically when the window regains focus.
 
+**History:** click a repo's name (or ⎇) to open its commit graph in its own
+window: branch lanes, commit details, and diffs (Hunk or Split). The window's
+repo switcher lists the same repos as the dashboard. It's the
+[KrakenLite](../krakenlite) UI (`src/graph/`, `graph.html`) backed by the
+`kl_*` commands in `src-tauri/src/history.rs`, and refreshes itself when the
+repo changes.
+
 ## Run
 
 ```bash

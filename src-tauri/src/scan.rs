@@ -76,7 +76,7 @@ pub fn scan_root(root: &Path) -> Result<ScanResult, String> {
 }
 
 /// Splits `root`'s subfolders into git repos and everything else, sorted by name.
-fn list_children(root: &Path) -> Result<(Vec<PathBuf>, Vec<String>), String> {
+pub fn list_children(root: &Path) -> Result<(Vec<PathBuf>, Vec<String>), String> {
     let mut repos = Vec::new();
     let mut others = Vec::new();
     for entry in fs::read_dir(root).map_err(|e| e.to_string())? {
